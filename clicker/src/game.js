@@ -1,6 +1,7 @@
 var game = new Phaser.Game(800,600, Phaser.AUTO, '');
 
 game.state.add('play', {
+
 	//Preload function to load all images for the game at the start of going to url
 	preload: function() {
 		//Loading the first skeleton image
@@ -32,6 +33,9 @@ game.state.add('play', {
 		this.game.load.image('dagger', 'assets/496_RPG_icons/W_Dagger004.png');
 		this.game.load.image('sword', 'assets/496_RPG_icons/S_Sword09.png');
 		
+		//adding audio to the game
+		this.game.load.audio('boden', ['assets/audio/bodenstaendig_2000_in_rock_4bit.mp3', 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
+
 		//Building panel for upgrades
 		var bmd = this.game.add.bitmapData(250, 500);
 		bmd.ctx.fillStyle = '#9a783d';
@@ -63,8 +67,16 @@ game.state.add('play', {
 		this.levelKills = 0;
 		//Number of monsters required to advance level
 		this.levelKillsRequired = 10;
+				
 	},
+	
 	create: function() {
+		//Assign music var to reference and play
+		var music = this.game.add.audio('boden', 1, true);
+		music.loop = true;
+		music.play();
+		
+		//music = game.sound.play('boden');
 		//var skeletonSprite = game.add.sprite(450, 290, 'skeleton');
 		//skeletonSprite.anchor.setTo(0.5, 0.5);
 		//Setting the background images loaded to be the background
@@ -216,6 +228,7 @@ game.state.add('play', {
 			fill: '#fff',
 			strokeThickness: 4
 		}));
+
 	},
 	//DPS Function based on damage of player and health of monster
 	onDPS: function() {
@@ -313,13 +326,19 @@ game.state.add('play', {
 		//update the text display
 		this.monsterNameText.text = monster.details.name;
 		this.monsterHealthText.text = monster.health + 'HP';
-	}
-	//render: function() {
+	},
+	render: function() {
 		//game.debug.text('Adventure Awaits!', 250, 290);
 		//game.debug.text(this.currentMonster.details.name,
 		//this.game.world.centerX - this.currentMonster.width / 2,
 		//this.game.world.centerY + this.currentMonster.height /2);
-	//}
+		//Audio render files w/ optional Decoding if statement
+		//game.debug.soundInfo(music, 32, 32);
+		
+		//if (music.isDecoding) {
+			//game.debug.text("Decoding MPS ...", 32, 200);
+		//}
+	}
 });
 
 game.state.start('play');
