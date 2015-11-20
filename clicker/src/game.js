@@ -34,8 +34,34 @@ game.state.add('play', {
 		this.game.load.image('sword', 'assets/496_RPG_icons/S_Sword09.png');
 		
 		//adding audio to the game
-		this.game.load.audio('boden', ['assets/audio/bodenstaendig_2000_in_rock_4bit.mp3', 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
-
+		//this.game.load.audio('boden', ['assets/audio/bodenstaendig_2000_in_rock_4bit.mp3', 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']);
+		//adding Star Wars sprites, all credit to original person for spritesheet are located on the sprite sheets themselves in sw_assets
+		//Background
+		this.game.load.image('duneSea-back', 'sw_assets/background_sprite/duneSea-back.png');
+		this.game.load.image('duneSea-front', 'sw_assets/background_sprite/duneSea-front.png');
+		//Enemies
+		this.game.load.image('4-lom', 'sw_assets/enemy_sprites/4-lom.png');
+		this.game.load.image('black_ImpGuard', 'sw_assets/enemy_sprites/black_ImpGuard.png');
+		this.game.load.image('bobaFett', 'sw_assets/enemy_sprites/bobaFett.png');
+		this.game.load.image('bossk', 'sw_assets/enemy_sprites/bossk.png');
+		this.game.load.image('darthVader', 'sw_assets/enemy_sprites/darthVader.png');
+		this.game.load.image('dengar', 'sw_assets/enemy_sprites/dengar.png');
+		this.game.load.image('gamorrean', 'sw_assets/enemy_sprites/gamorrean.png');
+		this.game.load.image('hoth_probe', 'sw_assets/enemy_sprites/hoth_probe.png');
+		this.game.load.image('ig-88', 'sw_assets/enemy_sprites/ig-88.png');
+		this.game.load.image('monkeyLizard', 'sw_assets/enemy_sprites/monkeyLizard.png');
+		this.game.load.image('probe', 'sw_assets/enemy_sprites/probe.png');
+		this.game.load.image('rancor', 'sw_assets/enemy_sprites/rancor.png');
+		this.game.load.image('red_ImpGuard', 'sw_assets/enemy_sprites/red_ImpGuard.png');
+		this.game.load.image('sideous', 'sw_assets/enemy_sprites/sideous.png');
+		this.game.load.image('zuckuss', 'sw_assets/enemy_sprites/zuckuss.png');
+		//Audio, I do not own the rights to this sound file, all rights are reserved and owned by John Williams and the London Symphony Orchestra
+		this.game.load.audio('mainTitle', 'sw_assets/MainTitle.ogg');
+		//Weapons
+		this.game.load.image('blasterShot', 'sw_assets/ability_sprites/blasterShot.png');
+		this.game.load.image('forcePush', 'sw_assets/ability_sprites/forcePush.png');
+		this.game.load.image('saberSlash', 'sw_assets/ability_sprites/saberSlash.png');
+		this.game.load.image('thermalDet', 'sw_assets/ability_sprites/thermalDetonator.png');
 		//Building panel for upgrades
 		var bmd = this.game.add.bitmapData(250, 500);
 		bmd.ctx.fillStyle = '#9a783d';
@@ -72,7 +98,7 @@ game.state.add('play', {
 	
 	create: function() {
 		//Assign music var to reference and play
-		var music = this.game.add.audio('boden', 1, true);
+		var music = this.game.add.audio('mainTitle', 1, true);
 		music.loop = true;
 		music.play();
 		
@@ -85,6 +111,7 @@ game.state.add('play', {
 		this.background = this.game.add.group();
 		//setup each of our background layers to take the full screen
 		['forest-back', 'forest-lights', 'forest-middle', 'forest-front']
+		//['duneSea-back', 'duneSea-front'] Could not get the Tattoine Dune Sea images to work for the background, so we will keep the forest theme and pretend we are on Endor :D
 			.forEach(function(image) {
 				var bg = state.game.add.tileSprite(0, 0, state.game.world.width,
 					state.game.world.height, image, '', state.background);
@@ -97,11 +124,17 @@ game.state.add('play', {
 		upgradeButtons.position.setTo(8, 8);
 		//Data for upgrade buttons based on attack type
 		var upgradeButtonsData = [
-			{icon: 'dagger', name: 'Attack', level:0, cost:5, purchaseHandler: function(button, player) {
+			{icon: 'blasterShot', name: 'Blaster Shot', level:0, cost:5, purchaseHandler: function(button, player) {
 				player.clickDmg += 1;
 			}},
-			{icon: 'sword', name: 'Auto-Attack', level:0, cost:25, purchaseHandler: function(button, player) {
+			{icon: 'saberSlash', name: 'Saber Slash', level:0, cost:25, purchaseHandler: function(button, player) {
 				player.dps += 5;
+			}},
+			{icon: 'forcePush', name: 'Force Push', level: 0, cost: 100, purchaseHandler: function(button, player) {
+				player.clickDmg += 20;
+			}},
+			{icon: 'thermalDet', name: 'Thermal Detonator', level: 0, cost: 50, purchaseHandler: function(button, player) {
+				player.clickDmg += 10;
 			}}
 		];
 		
@@ -117,24 +150,23 @@ game.state.add('play', {
 			
 			upgradeButtons.addChild(button);
 		});
-		//Creating the data for connecting name of monster to corresponding sprite
+		//Creating the data for connecting name of monster to corresponding sprite, updated for Star Wars theme
 		var monsterData = [
-			{name: 'Aerocephal', image: 'aerocephal', maxHealth: 10},
-			{name: 'Arcana Drake', image: 'arcana_drake', maxHealth: 20},
-			{name: 'Aurum Draueli', image: 'aurum-drakueli', maxHealth: 30},
-			{name: 'Bat', image: 'bat', maxHealth: 5},
-			{name: 'Daemarbora', image: 'daemarbora', maxHealth: 10},
-			{name: 'Deceleon', image: 'deceleon', maxHealth: 10},
-			{name: 'Demonic Essence', image: 'demonic_essence', maxHealth: 15},
-			{name: 'Dune Crawler', image: 'dune_crawler', maxHealth: 8},
-			{name: 'Green Slime', image: 'green_slime', maxHealth: 3},
-			{name: 'Nagaruda', image: 'nagaruda', maxHealth:13},
-			{name: 'Rat', image: 'rat', maxHealth: 2},
-			{name: 'Scorpion', image: 'scorpion', maxHealth: 2},
-			{name: 'Skeleton', image: 'skeleton', maxHealth: 6},
-			{name: 'Snake', image: 'snake', maxHealth: 4},
-			{name: 'Spider', image: 'spider', maxHealth: 4},
-			{name: 'Stygian Lizard', image: 'stygian_lizard', maxHealth: 20}
+			{name: '4-Lom', image: '4-lom', maxHealth: 10},
+			{name: 'B. Imperial Guard', image: 'black_ImpGuard', maxHealth: 20},
+			{name: 'Boba Fett', image: 'bobaFett', maxHealth: 30},
+			{name: 'Bossk', image: 'bossk', maxHealth: 5},
+			{name: 'Darth Vader', image: 'darthVader', maxHealth: 10},
+			{name: 'Dengar', image: 'dengar', maxHealth: 10},
+			{name: 'Gamorrean', image: 'gamorrean', maxHealth: 15},
+			{name: 'Hoth Probe', image: 'hoth_probe', maxHealth: 8},
+			{name: 'IG-88', image: 'ig-88', maxHealth: 3},
+			{name: 'Monkey Lizard', image: 'monkeyLizard', maxHealth:13},
+			{name: 'Probe', image: 'probe', maxHealth: 2},
+			{name: 'Rancor', image: 'rancor', maxHealth: 2},
+			{name: 'R. Imperial Guard', image: 'red_ImpGuard', maxHealth: 6},
+			{name: 'Darth Sideous', image: 'sideous', maxHealth: 4},
+			{name: 'Zuckuss', image: 'zuckuss', maxHealth: 4},
 		];
 		//Creating the monster group and attributes for monsters, as well as click-event
 		this.monsters = this.game.add.group();
@@ -146,7 +178,8 @@ game.state.add('play', {
 			//use the built in health component
 			monster.health = monster.maxHealth = data.maxHealth;
 			//center anchor
-			monster.anchor.setTo(0.5, 1);
+			monster.anchor.setTo(0.5, 1.5);
+			monster.scale.setTo(1.5, 1.5);
 			//reference to the database
 			monster.details = data;
 			
